@@ -4,12 +4,13 @@ public:
     
     int find(int x){
         if(par[x]==-1) return x;
-        return par[x]=find(par[x]);
+        return find(par[x]);
     }
     
     void Union(int x, int y) {
         x = find(x);
         y = find(y);
+        cout<<x<<" "<<y<<endl;
         
         if (x != y) 
             par[max(x, y)] = min(x, y); 
