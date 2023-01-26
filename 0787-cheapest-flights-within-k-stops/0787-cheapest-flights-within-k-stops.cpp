@@ -1,19 +1,30 @@
 class Solution {
 public:
-     int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
-    vector<int> dist( n, INT_MAX );
-        dist[src] = 0;
-        
-        // Run only K+1 times since we want shortest distance in K hops
-        for( int i=0; i <= K; i++ ) {
-            vector<int> tmp( dist );
-            for( auto flight : flights ) {
-                if( dist[ flight[0] ] != INT_MAX ) {
-                    tmp[ flight[1] ] = min( tmp[flight[1]], dist[ flight[0] ] + flight[2] );
+     int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+    vector<vector<pair<int, int>>> adj(n);
+        for (auto& e : flights) {
+            adj[e[0]].push_back({e[1], e[2]});
+        }
+        vector<int> dist(n, numeric_limits<int>::max());
+        queue<pair<int, int>> q;
+        q.push({src, 0});
+        int stops = 0;
+
+        while (stops <= k && !q.empty()) {
+            int sz = q.size();
+            // Iterate on current level.
+            while (sz--) {
+                auto [node, distance] = q.front();
+                q.pop();
+                // Iterate over neighbors of popped node.
+                for (auto& [neighbour, price] : adj[node]) {
+                    if (price + distance >= dist[neighbour]) continue;
+                    dist[neighbour] = price + distance;
+                    q.push({neighbour, dist[neighbour]});
                 }
             }
-            dist = tmp;
+            stops++;
         }
-        return dist[dst] == INT_MAX ? -1 : dist[dst];
+        return dist[dst] == numeric_limits<int>::max() ? -1 : dist[dst];
     }
 };
